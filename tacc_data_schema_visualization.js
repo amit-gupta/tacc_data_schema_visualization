@@ -118,10 +118,9 @@ function gray_out_everything_else() {
 	//console.log(currently_selected_nodes.includes(node))
         if(!currently_selected_nodes.includes(node.id)) {
             node.color = "rgba(200,200,200,0.4)";
-            if(node.group=="Problem" || node.group=="Collection"){
-		node.x = network.getPosition(node.id).x;
-		node.y = network.getPosition(node.id).y;
-	    }
+	    node.x = network.getPosition(node.id).x;
+	    node.y = network.getPosition(node.id).y;
+
             nodes.update(node);
         }      
     }
@@ -195,7 +194,7 @@ function node_select_handler(selected_nodes) {
 	      }
 	    */
 	    //console.log(currently_selected_nodes);
-	    var all_nodes_to_highlight = neighbour_nodes
+	    var all_nodes_to_highlight = neighbour_nodes;
 	    all_nodes_to_highlight = all_nodes_to_highlight.concat(nodeId);
 	    //console.log(nodeId);
 	    //console.log(typeof(all_nodes_to_highlight), all_nodes_to_highlight);
