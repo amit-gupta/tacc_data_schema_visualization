@@ -154,10 +154,10 @@ function node_select_handler(selected_nodes) {
 	//get all nodes to default color and position
 	for(var [i, node] of Object.entries(allNodes)) {
 	    node.color=node.oldcolor;
-	    if(node.group=="Problem" || node.group=="Collection"){
+//	    if(node.group=="Problem" || node.group=="Collection"){
 		node.x = network.getPosition(node.id).x;
 		node.y = network.getPosition(node.id).y;
-	    }
+//	    }
 	    node.borderWidth=1;
 	    node.borderWidthSelected=1;
 	    nodes.update(node);
