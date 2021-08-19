@@ -230,14 +230,31 @@ function node_right_click_handler(obj) {
     //check if there is a description for this node
     
     $(".right_click_menu").toggle();
-    //set label
-    $("[id='heading']").html(node.label);
-    //set description
-    $("[id='description']").html(node.description);
-    //set url
-    $("[id='url']").html(node.url);
-    $("[id='url']").attr("href", node.url);
-    $("[id='url']").attr("target", "_blank");
+    //if visible, set the values
+    if($(".right_click_menu").is(":visible")) {
+	//set label
+	$("[id='heading']").html(node.label);
+	//set description
+	$("[id='description']").html(node.description);
+	//set url
+	$("[id='url']").html(node.url);
+	$("[id='url']").attr("href", node.url);
+	$("[id='url']").attr("target", "_blank");
+
+    }
+    else {
+
+	//set label
+	$("[id='heading']").empty();
+	//set description
+	$("[id='description']").empty();
+	//set url
+	$("[id='url']").empty();
+	$("[id='url']").empty();
+	$("[id='url']").empty(); 
+	
+    }
+
     //set menu style
     $(".right_click_menu").css({
 	top: obj.event.pageY + "px",
