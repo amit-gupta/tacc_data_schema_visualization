@@ -7,13 +7,16 @@ function getMapWidth() {
 }
 
 function set_default_edge(edge_list) {
+    edges_to_reset = [];
     for(var edgeId of edge_list){
 	//console.log(edgeId, allEdges[edgeId]);
 	edge = allEdges[edgeId];
 	edge["color"]={"color":"black","inherit":false};
 	edge["width"]=1;
-	edges.update(edge);
+  edges_to_reset.push(edge);
+	
     }
+    edges.update(edges_to_reset);
 }
 
  //Set fixed coordinates for Collection and Problem Nodes
@@ -78,8 +81,8 @@ function change_highlight_color() {
     //highlight_color = colors[color_index];
 }
 
-
 function highlight_nodes(node_ids) {
+    updated_nodes = []
     for(var nodeId of node_ids) {
 	//console.log(allNodes[nodeId]);
 	allNodes[nodeId].x = network.getPosition(nodeId).x;
@@ -92,44 +95,53 @@ function highlight_nodes(node_ids) {
 	allNodes[nodeId].color=color;
 	allNodes[nodeId].borderWidth=4;
 	allNodes[nodeId].borderWidthSelected=4;
-	nodes.update(allNodes[nodeId]);
+	updated_nodes.push(allNodes[nodeId]);
 	//console.log(allNodes[nodeId].oldcolor, allNodes[nodeId].color);
 	//console.log(nodeId);
 	//node = allNodes[nodeId];
 	//node.color="red";
 	//allNodes.update(node);
     }
+    //console.log(updated_nodes);
+    nodes.update(updated_nodes);
+   
     
 }
 
 function highlight_edges(edges_list) {
-
+    var edges_to_highlight = []
     for(var edgeId of edges_list) {
 	edge = allEdges[edgeId];
         edge.color=highlight_color;
         edge.width=4;
-        edges.update(edge);
+        edges_to_highlight.push(edge);
     }
+    edges.update(edges_to_highlight);
 }
 
 function gray_out_everything_else() {
+    var nodes_to_gray_out = []
+    var edges_to_gray_out = []
     //nodes
     for(var [i, node] of Object.entries(allNodes)) {
 	//console.log(currently_selected_nodes.includes(node))
         if(!currently_selected_nodes.includes(node.id)) {
             node.color = "rgba(200,200,200,0.4)";
-	    node.x = network.getPosition(node.id).x;
-	    node.y = network.getPosition(node.id).y;
+	        node.x = network.getPosition(node.id).x;
+	        node.y = network.getPosition(node.id).y;
 
-            nodes.update(node);
+            nodes_to_gray_out.push(node);
         }      
     }
     for(var [i, edge] of Object.entries(allEdges)) {
 	if(!currently_selected_edges.includes(edge.id)) {
             edge.color= "rgba(200,200,200,0.4)";
-            edges.update(edge);
+	    edges_to_gray_out.push(edge);
         }
     }
+    
+    nodes.update(nodes_to_gray_out);
+    edges.update(edges_to_gray_out);
 }
 
 //adds list2 to list1, removes duplicates and returns list without duplicates
@@ -144,25 +156,26 @@ function concat_to_list_without_duplicates(list1, list2) {
     return result_list;
 }
 
-
 function node_select_handler(selected_nodes) {
     //hide right click menu if open
     $(".right_click_menu").hide();
     if(selected_nodes.nodes.length==0) {
 	//network.redraw();
 	//console.log(allNodes);
+	var nodes_to_reset = [];
 	//get all nodes to default color and position
 	for(var [i, node] of Object.entries(allNodes)) {
-	    node.color=node.oldcolor;
-//	    if(node.group=="Problem" || node.group=="Collection"){
-		node.x = network.getPosition(node.id).x;
-		node.y = network.getPosition(node.id).y;
-//	    }
-	    node.borderWidth=1;
-	    node.borderWidthSelected=1;
-	    nodes.update(node);
-	    //console.log(node);
-	}
+	        node.color=node.oldcolor;
+	    //    if(node.group=="Problem" || node.group=="Collection"){
+	    node.x = network.getPosition(node.id).x;
+	    node.y = network.getPosition(node.id).y;
+	    //    }
+	        node.borderWidth=1;
+	        node.borderWidthSelected=1;
+	        nodes_to_reset.push(node);
+	        //console.log(node);
+	    }
+	nodes.update(nodes_to_reset);
 	//get all edges to default color
 	//set_default_edge(currently_selected_edges);
 	set_default_edge(list_of_all_edges);
@@ -174,34 +187,34 @@ function node_select_handler(selected_nodes) {
 	//console.log(selected_nodes.nodes);
 	//console.log(selected_nodes.edges);
 	for(var nodeId of selected_nodes.nodes) {
-	    //var node = allNodes[nodeId];
-	    //console.log(node);
-	    //console.log(currently_selected_nodes);
-	    var neighbour_nodes = network.getConnectedNodes(nodeId);
-	    //console.log(neighbour_nodes);
-	    //var neighbour_edges = network.getConnectedEdges(nodeId);
-	    var neighbour_edges = selected_nodes.edges;
-	    /*
-	      currently_selected_edges = currently_selected_edges.concat(neighbour_edges);
-	      currently_selected_nodes = currently_selected_nodes.concat(nodeId);
-	      currently_selected_nodes = currently_selected_nodes.concat(neighbour_nodes);
-	    */
-	    currently_selected_edges = concat_to_list_without_duplicates(currently_selected_edges, neighbour_edges);
-	    currently_selected_nodes = concat_to_list_without_duplicates(currently_selected_nodes, neighbour_nodes.concat(nodeId));
-	    /*
-	      for(var neighbour_node_id of neighbour_nodes) {
-	      currently_selected_nodes = currently_selected_nodes.concat(neighbour_node_id);
-	      }
-	    */
-	    //console.log(currently_selected_nodes);
-	    var all_nodes_to_highlight = neighbour_nodes;
-	    all_nodes_to_highlight = all_nodes_to_highlight.concat(nodeId);
-	    //console.log(nodeId);
-	    //console.log(typeof(all_nodes_to_highlight), all_nodes_to_highlight);
-	    //console.log(neighbour_edges.length);
-	    //console.log(currently_selected_edges);
-	    //all_nodes_to_highlight.push(nodeId);
-	}
+	        //var node = allNodes[nodeId];
+	        //console.log(node);
+	        //console.log(currently_selected_nodes);
+	        var neighbour_nodes = network.getConnectedNodes(nodeId);
+	        //console.log(neighbour_nodes);
+	        //var neighbour_edges = network.getConnectedEdges(nodeId);
+	        var neighbour_edges = selected_nodes.edges;
+	        /*
+		        currently_selected_edges = currently_selected_edges.concat(neighbour_edges);
+			      currently_selected_nodes = currently_selected_nodes.concat(nodeId);
+			            currently_selected_nodes = currently_selected_nodes.concat(neighbour_nodes);
+				        */
+	        currently_selected_edges = concat_to_list_without_duplicates(currently_selected_edges, neighbour_edges);
+	        currently_selected_nodes = concat_to_list_without_duplicates(currently_selected_nodes, neighbour_nodes.concat(nodeId));
+	        /*
+		        for(var neighbour_node_id of neighbour_nodes) {
+			      currently_selected_nodes = currently_selected_nodes.concat(neighbour_node_id);
+			            }
+				        */
+	        //console.log(currently_selected_nodes);
+	        var all_nodes_to_highlight = neighbour_nodes;
+	        all_nodes_to_highlight = all_nodes_to_highlight.concat(nodeId);
+	        //console.log(nodeId);
+	        //console.log(typeof(all_nodes_to_highlight), all_nodes_to_highlight);
+	        //console.log(neighbour_edges.length);
+	        //console.log(currently_selected_edges);
+	        //all_nodes_to_highlight.push(nodeId);
+	    }
 	//console.log(all_nodes_to_highlight);
 	//console.log(currently_selected_nodes);
 	highlight_nodes(all_nodes_to_highlight);
@@ -213,6 +226,8 @@ function node_select_handler(selected_nodes) {
     }
     
 }
+
+
 
 
 function node_right_click_handler(obj) {
