@@ -227,19 +227,16 @@ function node_select_handler(selected_nodes) {
     
 }
 
-
-
-
 function node_right_click_handler(obj) {
     obj.event.preventDefault();
-    
+    //set url
     nodeid = network.getNodeAt({x:obj.pointer.DOM.x, y:obj.pointer.DOM.y});
     //var menu = document.querySelector(".right_click_menu"); 
     if(nodeid===undefined) {
         $(".right_click_menu").hide();
         return;
     }
-    node = allNodes[nodeid]
+    node = allNodes[nodeid];
     //console.log(node);
     //menu.style.display==="inline";
     //check if there is a description for this node
@@ -250,12 +247,29 @@ function node_right_click_handler(obj) {
 	//set label
 	$("[id='heading']").html(node.label);
 	//set description
-	$("[id='description']").html(node.description);
-	//set url
-	$("[id='url']").html(node.url);
-	$("[id='url']").attr("href", node.url);
-	$("[id='url']").attr("target", "_blank");
+	if(node.description===undefined) {
+	        $("[id='description']").empty();
+	    }
+	else {
+	        $("[id='description']").html(node.description);
+	    }
+	
+	if(node.url===undefined) {
+	        $("[id='urls']").empty();
+	    }
+	else {
+	        urls = (node.url).split(',');
 
+	        for(url of urls) {
+      
+		    var a_element = $('<a>');
+		    a_element.html(url);
+		    a_element.attr("href", url);
+		    a_element.attr("target", "_blank");
+
+		    $("[id='urls']").append(a_element);
+		}    
+	    }
     }
     else {
 
@@ -264,9 +278,7 @@ function node_right_click_handler(obj) {
 	//set description
 	$("[id='description']").empty();
 	//set url
-	$("[id='url']").empty();
-	$("[id='url']").empty();
-	$("[id='url']").empty(); 
+	$("[id='urls']").empty();
 	
     }
 
@@ -291,4 +303,6 @@ function node_right_click_handler(obj) {
     
     //console.log(node);
 }
+
+
 
